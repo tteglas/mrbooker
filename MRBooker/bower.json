@@ -1,0 +1,22 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "jquery": "3.3.1",
+    "jquery-validation": "1.17.0",
+    "jquery-validation-unobtrusive": "v3.2.10",
+    "bootstrap": "v4.1.1",
+    "popper.js": "v1.14.3",
+    "scheduler": "v5.0.1",
+    "bootstrap-colorpicker": "mjolnic-bootstrap-colorpicker#2.5.2",
+    "notifyjs": "v0.4.2"
+  },
+  "resolutions": {
+    "jquery": "3.3.1",
+    "bootstrap": "v4.1.1",
+    "jquery-validation": "1.17.0",
+    "scheduler": "v5.0.1",
+    "popper.js": "v1.14.3",
+    "jquery-validation-unobtrusive": "v3.2.10"
+  }
+}

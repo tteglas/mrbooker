@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h1>
+                    Admin dashboard <small>Choose your entity to manage.</small>
+                </h1>
+            </div>
+            <div class="col-md-5">
+                <a asp-action="Index" asp-controller="Room" class="btn btn-info btn-default">Room</a>
+            </div>
+            <div class="col-md-5">
+                <a asp-action="Index" asp-controller="Place" class="btn btn-info btn-default">Place</a>
+            </div>
+        </div>
+    </div>
+</div>

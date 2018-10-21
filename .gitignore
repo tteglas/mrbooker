@@ -1,0 +1,13 @@
+################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/MRBooker/bin
+/MRBooker/obj
+/MRBooker.Data/bin
+/MRBooker.Data/obj
+/.vs
+MRBooker/Logs
+MRBooker/wwwroot/
+/MRBooker.Tests/obj
+/MRBooker.Tests/bin/
