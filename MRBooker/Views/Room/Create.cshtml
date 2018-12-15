@@ -13,43 +13,50 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Capacity" class="control-label"></label>
-                <input asp-for="Capacity" class="form-control" />
-                <span asp-validation-for="Capacity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Color" class="control-label"></label>
-                <div id="color" class="input-group colorpicker-component">
-                    <input asp-for="Color" class="form-control" value="#00aabb"/>
-                    <span asp-validation-for="Color" class="input-group-addon"><i></i></span>
+        @if (Model.Places == null || (Model.Places != null && !Model.Places.Any()))
+        {
+            <a asp-action="Create" asp-controller="Place">Create a Place first !</a>
+        }
+        else
+        {
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
-                <span asp-validation-for="Color" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PlaceId" class="control-label">Place (<a asp-action="Index" asp-controller="Place">view list</a>)</label>
-                <select asp-for="PlaceId" class="form-control"
-                        asp-items="@(new SelectList(Model.Places, "Id", "Country"))">
-                    <option>Please select one</option>
-                </select>
-                <span asp-validation-for="PlaceId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </form>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Capacity" class="control-label"></label>
+                    <input asp-for="Capacity" class="form-control" />
+                    <span asp-validation-for="Capacity" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Color" class="control-label"></label>
+                    <div id="color" class="input-group colorpicker-component">
+                        <input asp-for="Color" class="form-control" value="#00aabb" />
+                        <span asp-validation-for="Color" class="input-group-addon"><i></i></span>
+                    </div>
+                    <span asp-validation-for="Color" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PlaceId" class="control-label">Place (<a asp-action="Index" asp-controller="Place">view list</a>)</label>
+                    <select asp-for="PlaceId" class="form-control"
+                            asp-items="@(new SelectList(Model.Places, "Id", "Country"))">
+                        <option>Please select one</option>
+                    </select>
+                    <span asp-validation-for="PlaceId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
+            </form>
+        }
     </div>
 </div>
 
@@ -62,5 +69,5 @@
         $(function () {
             $('#color').colorpicker();
         });
-    </script>   
+    </script>
 }
