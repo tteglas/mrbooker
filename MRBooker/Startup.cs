@@ -62,6 +62,7 @@ namespace MRBooker
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(ApplicationUserManager<>));
+
             services.AddLogging().BuildServiceProvider();
             services.AddAuthentication()
                 .AddGoogle(options =>
@@ -149,7 +150,8 @@ namespace MRBooker
 }
 
 /// <summary>
-/// We need this class in order build a new instance of the ApplicationDbContext
+/// Because of the 'update-database' command that is required to generate the database,
+/// this class is required to be implemented.
 /// </summary>
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
@@ -157,7 +159,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Applicatio
     {
         IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.Development.json")
             .Build();
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
         var connectionString = configuration.GetConnectionString("DefaultConnection");

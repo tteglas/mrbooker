@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
 
@@ -10,7 +11,6 @@ namespace MRBooker
     {
         public static void Main(string[] args)
         {
-            //BuildWebHost(args).Run();
             var host = BuildApplicationWebHost(args);
 
             host.Run();
@@ -22,7 +22,8 @@ namespace MRBooker
             {
                 IHostingEnvironment env = builderContext.HostingEnvironment;
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables();
             })
               .UseKestrel()
               .UseContentRoot(Directory.GetCurrentDirectory())
