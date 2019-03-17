@@ -46,15 +46,45 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/css/bootstrap-colorpicker.css",
+    "outputFileName": "wwwroot/css/bootstrap-colorpicker.min.css",
     "inputFiles": [
       "wwwroot/lib/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap/dist/css/bootstrap.min.css",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap/dist/css/bootstrap.css"
     ]
   },
   {
     "outputFileName": "wwwroot/js/bootstrap-colorpicker.js",
     "inputFiles": [
       "wwwroot/lib/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/notify-component.min.js",
+    "inputFiles": [
+      "wwwroot/css/notify-component.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/leftMenu.min.css",
+    "inputFiles": [
+      "wwwroot/css/leftMenu.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/scheduler/codebase/ext/dhtmlxscheduler_map_view.min.js",
+    "inputFiles": [
+      "wwwroot/lib/scheduler/codebase/ext/dhtmlxscheduler_map_view.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/notify-component.min.css",
+    "inputFiles": [
+      "wwwroot/css/notify-component.css"
     ]
   }
 ]
