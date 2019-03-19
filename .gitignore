@@ -8,7 +8,6 @@
 /MRBooker.Data/obj
 /.vs
 MRBooker/Logs
-MRBooker/wwwroot/
 /MRBooker.Tests/obj
 /MRBooker.Tests/bin/
 *.pubxml
