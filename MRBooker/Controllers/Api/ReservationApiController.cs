@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace MRBooker.Controllers.Api
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("api/ReservationApi")]
     public class ReservationApiController : Controller
@@ -41,6 +42,7 @@ namespace MRBooker.Controllers.Api
         /// Get all existing reservations
         /// </summary>
         /// <returns>A list of all reservations</returns>
+        [AllowAnonymous]
         [HttpGet]
         [Route("GetAll")]
         public IActionResult GetAll()
@@ -64,6 +66,7 @@ namespace MRBooker.Controllers.Api
         /// Get all existing rooms
         /// </summary>
         /// <returns>A list of all rooms</returns>
+        [AllowAnonymous]
         [HttpGet]
         [Route("GetAllRooms")]
         public IActionResult GetAllRooms()
@@ -89,7 +92,6 @@ namespace MRBooker.Controllers.Api
         /// <returns>A list of reservations</returns>
         [HttpGet]
         [Route("GetUserReservations")]
-        [Authorize]
         public IActionResult GetUserReservations()
         {
             try
@@ -117,6 +119,7 @@ namespace MRBooker.Controllers.Api
         /// </summary>
         /// <param name="roomId">The id of the room</param>
         /// <returns>A list of reservations</returns>
+        [AllowAnonymous]
         [HttpGet]
         [Route("GetReservationByRoom")]
         public IActionResult GetReservationByRoom(long roomId)
@@ -144,6 +147,7 @@ namespace MRBooker.Controllers.Api
         /// </summary>
         /// <param name="id">Reservation id</param>
         /// <returns>A reservation</returns>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [Route("GetReservation")]
         public IActionResult GetReservation(long id)
@@ -170,7 +174,6 @@ namespace MRBooker.Controllers.Api
         /// <param name="model">The reservation details</param>
         /// <returns>Status Code Result</returns>
         [HttpPost(Name = "Insert")]
-        //[Authorize]
         //[ValidateAntiForgeryToken]
         [Route("Insert")]
         public StatusCodeResult Insert([FromBody] SchedulerEventModel model)
@@ -180,7 +183,7 @@ namespace MRBooker.Controllers.Api
                 var validator = new SchedulerEventValidation(_unitOfWork);
                 if (!validator.IsValidSchedulerEventModel(model))
                 {
-                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                    return new StatusCodeResult(StatusCodes.Status403Forbidden);
                 }
 
                 var ipAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -229,7 +232,7 @@ namespace MRBooker.Controllers.Api
                 var validator = new SchedulerEventValidation(_unitOfWork);
                 if (!validator.IsValidSchedulerEventModel(model))
                 {
-                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                    return new StatusCodeResult(StatusCodes.Status403Forbidden);
                 }
                 var reservation = _unitOfWork.ReservationRepository.GetAll().Include(x => x.Room).FirstOrDefault(x=> x.Id == model.Id);
                 if (reservation == null)
