@@ -41,7 +41,7 @@
     ];
 
     scheduler.templates.event_bar_text = function (start, end, ev) {
-        return ev.title;
+        return "<b>" + ev.title + "</b>";
     };
     scheduler.templates.tooltip_text = function (start, end, ev) {
         return "<b>Event:</b> " + ev.title + "<br/><b>Start date:</b> " +
