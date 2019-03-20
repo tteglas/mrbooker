@@ -24,6 +24,7 @@ namespace MRBooker.Services
             mailMessage.To.Add(email);
             mailMessage.Body = message;
             mailMessage.Subject = subject;
+            mailMessage.IsBodyHtml = true;
             client.SendAsync(mailMessage, null);
 
             return Task.CompletedTask;

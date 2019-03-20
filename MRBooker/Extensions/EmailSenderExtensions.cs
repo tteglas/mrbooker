@@ -6,8 +6,8 @@ namespace MRBooker.Services
     {
         public static Task SendEmailConfirmationAsync(this IEmailSender emailSender, string email, string link)
         {
-            return emailSender.SendEmailAsync(email, "Confirm your email",
-                $"Please confirm your account by clicking this link: <a href='{link}'>link</a>");
+            var emailBody = $"<html><body><p>Please confirm your account by clicking <a href=\"{link}\">this</a> link</body></html>";
+            return emailSender.SendEmailAsync(email, "Confirm your email", emailBody);
         }
     }
 }
