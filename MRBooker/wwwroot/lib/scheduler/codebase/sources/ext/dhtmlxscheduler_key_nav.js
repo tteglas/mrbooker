@@ -1,6 +1,6 @@
 /*
 @license
-dhtmlxScheduler v.5.0.0 Stardard
+dhtmlxScheduler v.5.1.6 Stardard
 
 This software is covered by GPL license. You also can obtain Commercial or Enterprise license to use it in non-GPL project - please contact sales@dhtmlx.com. Usage without proper license is prohibited.
 
@@ -531,7 +531,7 @@ scheduler.$keyboardNavigation.marker = {
 		var width = Math.max(1, end_pos - start_pos - 1);
 		block.style.cssText = "height: "+height+"px; left: "+start_pos+"px; width: "+width+"px; top: "+top+"px;";
 
-		area.insertBefore(block, area.firstChild);
+		area.appendChild(block);
 		blocks.push(block);
 
 		return blocks;
@@ -1038,7 +1038,6 @@ scheduler.$keyboardNavigation.Event = function(id){
 		this.end = new Date(ev.end_date);
 
 		this.section = this._getSection(ev);
-
 		this.eventId = id;
 	}
 };
@@ -1071,15 +1070,39 @@ scheduler.$keyboardNavigation.Event.prototype = scheduler._compose(
 			return defaultElement;
 		},
 
-		getNode: function(){
-			var idSelector = "[event_id='"+this.eventId+"']";
 
+
+		getNode: function(){
+
+			function isScrolledIntoView(el) {
+				var eventBox = el.getBoundingClientRect();
+				var viewPort = scheduler.$container.querySelector(".dhx_cal_data").getBoundingClientRect();
+				
+				if(eventBox.bottom < viewPort.top || eventBox.top > viewPort.bottom){
+					return false;
+				}
+				return true;
+			}
+
+			var idSelector = "[event_id='"+this.eventId+"']";
 
 			var inlineEditor = scheduler.$keyboardNavigation.dispatcher.getInlineEditor(this.eventId);
 			if(inlineEditor){// is inline editor visible
 				return inlineEditor;
 			}else{
-				return scheduler.$container.querySelector(idSelector);
+				if(scheduler.isMultisectionEvent && scheduler.isMultisectionEvent(scheduler.getEvent(this.eventId))){
+					var nodes = scheduler.$container.querySelectorAll(idSelector);
+					for(var i = 0; i < nodes.length; i++){
+						if(isScrolledIntoView(nodes[i])){
+							return nodes[i];
+						}
+					}
+					return nodes[0];
+				}else{
+					return scheduler.$container.querySelector(idSelector);
+				}
+
+				
 			}
 
 		},
@@ -2641,20 +2664,45 @@ scheduler.$keyboardNavigation.attachSchedulerHandlers = function(){
 		waitCall = setTimeout(function(){
 			if(!dispatcher.isEnabled())
 				dispatcher.enable();
-
-			var activeNode = dispatcher.getActiveNode();
-			if(activeNode instanceof scheduler.$keyboardNavigation.MinicalButton || activeNode instanceof scheduler.$keyboardNavigation.MinicalCell)
-				return;
-
-			if(!activeNode.isValid()){
-				dispatcher.setActiveNode(activeNode.fallback());
-			}else{
-				dispatcher.focusNode(activeNode);
-			}
-
-			dispatcher.focusNode(dispatcher.getActiveNode());
+			reFocusActiveNode();
 		});
 	});
+
+	var reFocusActiveNode = function(){
+		if(!dispatcher.isEnabled())
+			return;
+
+		var activeNode = dispatcher.getActiveNode();
+		if(!activeNode)
+			return;
+
+		if(!activeNode.isValid()){
+			activeNode = activeNode.fallback();
+		}
+
+		if(activeNode instanceof scheduler.$keyboardNavigation.MinicalButton || activeNode instanceof scheduler.$keyboardNavigation.MinicalCell)
+			return;
+
+		var top, left;
+
+		var scrollable = scheduler.$container.querySelector(".dhx_timeline_scrollable_data");
+		if(!scrollable){
+			scrollable = scheduler.$container.querySelector(".dhx_cal_data");
+		}
+
+		if(scrollable){
+			top = scrollable.scrollTop;
+			left = scrollable.scrollLeft;
+
+		}
+
+		activeNode.focus(true);
+
+		if(scrollable){
+			scrollable.scrollTop = top;
+			scrollable.scrollLeft = left;
+		}
+	};
 
 	scheduler.attachEvent("onSchedulerReady", function(){
 		var container = scheduler.$container;

@@ -1,12 +1,12 @@
 /*
 @license
-dhtmlxScheduler v.5.0.0 Stardard
+dhtmlxScheduler v.5.1.6 Stardard
 
 This software is covered by GPL license. You also can obtain Commercial or Enterprise license to use it in non-GPL project - please contact sales@dhtmlx.com. Usage without proper license is prohibited.
 
 (c) Dinamenta, UAB.
 */
-window.dhtmlXScheduler = window.scheduler = { version: "5.0.0" };
+window.dhtmlXScheduler = window.scheduler = { version: "5.1.6" };
 
 if (!window.dhtmlx) {
 	dhtmlx = function(obj){
@@ -1789,7 +1789,7 @@ dataProcessor.prototype = {
 			case "delete":
 			case "deleted":
 				this.obj.setUserData(sid, this.action_param, "true_deleted");
-				this.obj[this._methods[3]](sid);
+				this.obj[this._methods[3]](sid, tid);
 				delete this._in_progress[marker];
 				return this.callEvent("onAfterUpdate", [sid, action, tid, btag]);
 		}
@@ -1805,6 +1805,13 @@ dataProcessor.prototype = {
 		this.callEvent("onAfterUpdate", [soid, action, tid, btag]);
 	},
 
+	_errorResponse: function (xml, id){
+		if(this.obj && this.obj.callEvent){
+			this.obj.callEvent("onSaveError", [id, xml.xmlDoc]);
+		}
+		return this.cleanUpdate(id);
+	},
+
 	/**
 	 *	@desc: response from server
 	 *	@param: xml - XMLLoader object with response XML
@@ -1812,6 +1819,12 @@ dataProcessor.prototype = {
 	 */
 	afterUpdate: function (that, xml, id) {
 		var ajax = this.obj.$ajax;
+
+		if (xml.xmlDoc.status !== 200){
+			this._errorResponse(xml, id);
+			return;
+		}
+
 		//try to use json first
 		if (window.JSON) {
 			var tag;
@@ -1837,9 +1850,9 @@ dataProcessor.prototype = {
 		}
 		//xml response
 		var top = ajax.xmltop("data", xml.xmlDoc); //fix incorrect content type in IE
-		if (!top) return this.cleanUpdate(id);
+		if (!top) return this._errorResponse(xml, id);
 		var atag = ajax.xpath("//data/action", top);
-		if (!atag.length) return this.cleanUpdate(id);
+		if (!atag.length) this._errorResponse(xml, id);
 
 		for (var i = 0; i < atag.length; i++) {
 			var btag = atag[i];
@@ -2136,7 +2149,7 @@ dhtmlxError.catchError("LoadXML", function(a, b, c){
 
 
 		_eventCommonAttr: function(event, div){
-			div.setAttribute("aria-label", stripHTMLLite(scheduler.templates.tooltip_text(event.start_date, event.end_date, event)));
+			div.setAttribute("aria-label", stripHTMLLite(scheduler.templates.event_text(event.start_date, event.end_date, event)));
 
 			if(scheduler.config.readonly){
 				div.setAttribute("aria-readonly", true);
@@ -2437,12 +2450,12 @@ scheduler._init_once = function(){
 					return;
 
 				if (scheduler.callEvent("onSchedulerResize", [])) {
-					scheduler.update_view();
+					scheduler.updateView();
 					scheduler.callEvent("onAfterSchedulerResize", []);
 				}
 			}
 			oldSize = newSize;
-		}, 20);
+		}, 100);
 
 	});
 
@@ -2524,6 +2537,14 @@ scheduler.keys={
 	edit_save:13,
 	edit_cancel:27
 };
+
+scheduler.bind = function bind(functor, object){
+	if(functor.bind)
+		return functor.bind(object);
+	else
+		return function(){ return functor.apply(object,arguments); };
+};
+
 scheduler.set_sizes=function(){
 	var w = this._x = this._obj.clientWidth-this.xy.margin_left;
 	var h = this._y = this._obj.clientHeight-this.xy.margin_top;
@@ -2696,7 +2717,7 @@ scheduler._click={
 	},
 	dhx_cal_next_button:function(dummy,step){
 		scheduler.setCurrentView(scheduler.date.add( //next line changes scheduler._date , but seems it has not side-effects
-			scheduler.date[scheduler._mode+"_start"](scheduler._date),(step||1),scheduler._mode));
+			scheduler.date[scheduler._mode+"_start"](new Date(scheduler._date)),(step||1),scheduler._mode));
 	},
 	dhx_cal_today_button:function(){
 		if (scheduler.callEvent("onBeforeTodayDisplayed", [])) {
@@ -4933,8 +4954,13 @@ scheduler.render_view_data = function(evs, hold) {
 		this.render_data(tvs, hold);
 
 	} else {
-		this._rendered_location = this._els['dhx_cal_data'][0];
+		var buffer = document.createDocumentFragment();
+		var renderedLocation = this._els['dhx_cal_data'][0];
+		this._rendered_location = buffer;
 		this.render_data(evs, hold);
+		renderedLocation.appendChild(buffer);
+		this._rendered_location = renderedLocation;
+
 	}
 
 	if(full){
@@ -4997,7 +5023,7 @@ scheduler.attachEvent("onEventAdded", scheduler._recalculate_timed);
 
 scheduler.render_data = function(evs, hold) {
 	evs = this._pre_render_events(evs, hold);
-
+	var containers = {};
 	for (var i = 0; i < evs.length; i++)
 		if (this._table_view){
 			if(scheduler._mode != 'month'){
@@ -5018,8 +5044,29 @@ scheduler.render_data = function(evs, hold) {
 
 
 
-		}else
-			this.render_event(evs[i]);
+		}else{
+			var ev = evs[i];
+			var parent = scheduler.locate_holder(ev._sday);
+			if (!parent) continue; //attempt to render non-visible event
+
+			if(!containers[ev._sday]){
+				containers[ev._sday] = {
+					real: parent,
+					buffer: document.createDocumentFragment(),
+					width: parent.clientWidth
+				};
+			}
+			
+			var container = containers[ev._sday];
+			this.render_event(ev, container.buffer, container.width);
+		}
+
+		for(var i in containers){
+			var container = containers[i];
+			if(container.real && container.buffer){
+				container.real.appendChild(container.buffer);
+			}
+		}
 };
 
 scheduler._get_first_visible_cell = function(cells) {
@@ -5304,6 +5351,25 @@ scheduler._time_order = function(evs) {
 		return a.start_date > b.start_date ? 1 : -1;
 	});
 };
+
+scheduler._is_any_multiday_cell_visible = function(from, to, event){
+	var cols = this._cols.length;
+	var isAnyCellVisible = false;
+	var checkDate = from;
+	var noCells = true;
+	while(checkDate < to){
+		noCells = false;
+		var cellIndex = this.locate_holder_day(checkDate, false, event);
+		var weekCellIndex = cellIndex % cols;
+		if(!this._ignores[weekCellIndex]){
+			isAnyCellVisible = true;
+			break;
+		}
+		checkDate = scheduler.date.add(checkDate, 1, "day");
+	}
+	return noCells || isAnyCellVisible;
+};
+
 scheduler._pre_render_events_table = function(evs, hold) { // max - max height of week slot
 	this._time_order(evs);
 	var out = [];
@@ -5355,6 +5421,12 @@ scheduler._pre_render_events_table = function(evs, hold) { // max - max height o
 
 		//3600000 - compensate 1 hour during winter|summer time shift
 		ev._sweek = Math.floor((this._correct_shift(sd.valueOf(), 1) - this._min_date.valueOf()) / (60 * 60 * 1000 * 24 * cols));
+
+		var isAnyCellVisible = scheduler._is_any_multiday_cell_visible(sd, ed, ev);
+		
+		if(!isAnyCellVisible){
+			continue;
+		}
 
 		//current slot
 		var stack = weeks[ev._sweek];
@@ -5460,13 +5532,15 @@ scheduler._calc_event_y = function(ev, min_height){
 		height: height
 	};
 };
-scheduler.render_event = function(ev) {
+scheduler.render_event = function(ev, buffer, parentWidth) {
 	var menu = scheduler.xy.menu_width;
 	var menu_offset = (this.config.use_select_menu_space) ? 0 : menu;
 	if (ev._sday < 0) return; //can occur in case of recurring event during time shift
 
 	var parent = scheduler.locate_holder(ev._sday);	
 	if (!parent) return; //attempt to render non-visible event
+
+	buffer = buffer || parent;
 
 	var pos_y = this._calc_event_y(ev, scheduler.xy.min_event_height);
 	var top = pos_y.top,
@@ -5475,7 +5549,9 @@ scheduler.render_event = function(ev) {
 	var ev_count = ev._count || 1;
 	var ev_sorder = ev._sorder || 0;
 
-	var width = Math.floor((parent.clientWidth - menu_offset) / ev_count);
+	parentWidth = parentWidth || parent.clientWidth;
+
+	var width = Math.floor((parentWidth - menu_offset) / ev_count);
 	var left = ev_sorder * width + 1;
 	if (!ev._inner) width = width * (ev_count - ev_sorder);
 	if (this.config.cascade_event_display) {
@@ -5483,13 +5559,13 @@ scheduler.render_event = function(ev) {
 		var margin = this.config.cascade_event_margin;
 		left = ev_sorder % limit * margin;
 		var right = (ev._inner) ? (ev_count - ev_sorder - 1) % limit * margin / 2 : 0;
-		width = Math.floor(parent.clientWidth - menu_offset - left - right);
+		width = Math.floor(parentWidth - menu_offset - left - right);
 	}
 
 	var d = this._render_v_bar(ev, menu_offset + left, top, width, height, ev._text_style, scheduler.templates.event_header(ev.start_date, ev.end_date, ev), scheduler.templates.event_text(ev.start_date, ev.end_date, ev));
 	this._waiAria.eventAttr(ev, d);
 	this._rendered.push(d);
-	parent.appendChild(d);
+	buffer.appendChild(d);
 
 	left = left + parseInt(parent.style.left, 10) + menu_offset;
 
@@ -5614,7 +5690,7 @@ scheduler._render_v_bar = function (ev, x, y, w, h, style, contentA, contentB, b
 		inner_html += '<div class="dhx_body" style=" width:' + bodyWidth + 'px; height:' + bodyHeight + 'px;' + bg_color + '' + color + '">' + contentB + '</div>'; // +2 css specific, moved from render_event
 
 		var footer_class = "dhx_event_resize dhx_footer";
-		if (bottom)
+		if (bottom || ev._drag_resize === false)
 			footer_class = "dhx_resize_denied " + footer_class;
 
 		inner_html += '<div class="' + footer_class + '" style=" width:' + footerWidth + 'px;' + (bottom ? ' margin-top:-1px;' : '') + '' + bg_color + '' + color + '" ></div>';
@@ -6041,7 +6117,9 @@ scheduler.json.parse = function(data) {
 			collections_loaded = true;
 			var collection = collections[key];
 			var arr = scheduler.serverList[key];
-			if (!arr) continue;
+			if (!arr) {
+				scheduler.serverList[key] = arr = [];
+			}
 			arr.splice(0, arr.length); //clear old options
 			for (var j = 0; j < collection.length; j++) {
 				var option = collection[j];
@@ -6099,14 +6177,11 @@ scheduler.serverList = function(name, array) {
 scheduler._userdata = {};
 scheduler._magic_parser = function(loader) {
 	var xml;
-	if (!loader.getXMLTopNode) { //from a string
-		//var xml_string = loader.xmlDoc.responseText;
-		//loader = new dtmlXMLLoaderObject(function() {});
-		//loader.loadXMLString(xml_string);
-        loader = scheduler.$ajax.parse(loader);
+
+	if (!loader.xmlDoc.responseXML) { //from a string
+		loader.xmlDoc.responseXML = scheduler.$ajax.parse(loader.xmlDoc.responseText);
 	}
 
-	//xml = loader.getXMLTopNode("data");
 	xml = scheduler.$ajax.xmltop("data", loader.xmlDoc);
 	if (xml.tagName != "data") return null;//not an xml
 	var skey = xml.getAttribute("dhx_security");
@@ -6117,7 +6192,9 @@ scheduler._magic_parser = function(loader) {
 	for (var i = 0; i < opts.length; i++) {
 		var bind = opts[i].getAttribute("for");
 		var arr = this.serverList[bind];
-		if (!arr) continue;
+		if (!arr) {
+			scheduler.serverList[bind] = arr = [];
+		}
 		arr.splice(0, arr.length);	//clear old options
 		var itms = scheduler.$ajax.xpath(".//item", opts[i]);
 		for (var j = 0; j < itms.length; j++) {
@@ -6179,9 +6256,11 @@ scheduler.attachEvent("onXLS", function() {
 scheduler.attachEvent("onXLE", function() {
 	var t = this.config.show_loading;
 	if (t && typeof t == "object") {
-			this._obj.removeChild(t);
-			this.config.show_loading = true;
+		if(t.parentNode) {
+			t.parentNode.removeChild(t);
 		}
+		this.config.show_loading = true;
+	}
 });
 
 scheduler.ical={
@@ -7009,10 +7088,10 @@ scheduler._lightbox_template="<div class='dhx_cal_ltitle'><span class='dhx_mark'
 
 scheduler._init_touch_events = function(){
 	var mobile = this.config.touch  &&
-		( (navigator.userAgent.indexOf("Mobile")!=-1)   ||
+		( ((navigator.userAgent.indexOf("Mobile")!=-1)   ||
 			(navigator.userAgent.indexOf("iPad")!=-1)       ||
 			(navigator.userAgent.indexOf("Android")!=-1)    ||
-			(navigator.userAgent.indexOf("Touch")!=-1));
+			(navigator.userAgent.indexOf("Touch")!=-1)) && !window.MSStream);
 
 	if(mobile){
 		this.xy.scroll_width = 0;
@@ -7090,6 +7169,14 @@ scheduler._touch_events = function(names, accessor, ignore){
 		if(t != scheduler._obj){
 			//swipe outside scheduler
 			return false;
+		}
+
+		// ignore swipe in horizontal timeline
+		if(scheduler.matrix && scheduler.matrix[scheduler.getState().mode]){
+			var timeline = scheduler.matrix[scheduler.getState().mode];
+			if(timeline.scrollable){
+				return false;
+			}
 		}
 
 		var dy = Math.abs(s_ev.pageY - e_ev.pageY);
@@ -7183,7 +7270,7 @@ scheduler._touch_events = function(names, accessor, ignore){
 
 	});
 
-	attachTouchEvent(this._els["dhx_cal_data"][0], "scroll", drag_cancel);
+	//attachTouchEvent(this._els["dhx_cal_data"][0], "scroll", drag_cancel);
 	attachTouchEvent(this._els["dhx_cal_data"][0], "touchcancel", drag_cancel);
 	attachTouchEvent(this._els["dhx_cal_data"][0], "contextmenu", function(e){
 		if (ignore(e)) return;
@@ -7371,7 +7458,7 @@ scheduler._dp_init=function(dp){
 		if(!scheduler.getEvent(id))
 			return;
 
-		if(id != new_id){
+		if(new_id && id != new_id){
 			if(this.getUserData(id, dp.action_param) == "true_deleted")
 				this.setUserData(id, dp.action_param, "updated");
 

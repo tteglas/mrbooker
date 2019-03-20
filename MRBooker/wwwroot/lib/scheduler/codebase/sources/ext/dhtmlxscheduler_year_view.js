@@ -1,6 +1,6 @@
 /*
 @license
-dhtmlxScheduler v.5.0.0 Stardard
+dhtmlxScheduler v.5.1.6 Stardard
 
 This software is covered by GPL license. You also can obtain Commercial or Enterprise license to use it in non-GPL project - please contact sales@dhtmlx.com. Usage without proper license is prohibited.
 
@@ -71,7 +71,7 @@ scheduler.templates.year_tooltip = function(s, e, ev) {
 			if (dates.hasOwnProperty(date)) {
 				div = dates[date];
 				div.className = "dhx_month_head";
-				div.setAttribute("date", "");
+				div.removeAttribute("date");
 			}
 		}
 		scheduler._year_marked_cells = {};
@@ -146,21 +146,16 @@ scheduler.templates.year_tooltip = function(s, e, ev) {
 		dhtmlxEvent(scheduler._els["dhx_cal_data"][0], "mouseover", scheduler._year_view_tooltip_handler);
 	};
 
-	scheduler.attachEvent("onSchedulerResize", function() {
-		if (is_year_mode()) {
-			this.year_view(true);
-			return false;
-		}
-		return true;
-	});
 	scheduler._get_year_cell = function(d) {
 		//there can be more than 1 year in view
 		//year can start not from January
 		var m = d.getMonth() + 12 * (d.getFullYear() - this._min_date.getFullYear()) - this.week_starts._month;
-		var t = this._els["dhx_cal_data"][0].childNodes[m];
-		var d = this.week_starts[m] + d.getDate() - 1;
+		var yearBox = this._els["dhx_cal_data"][0].childNodes[m];
+		var dayIndex = this.week_starts[m] + d.getDate() - 1;
 
-		return t.querySelector(".dhx_year_body").firstChild.rows[Math.floor(d / 7)].cells[d % 7].firstChild;
+		var row = yearBox.querySelectorAll(".dhx_year_body tr")[Math.floor(dayIndex / 7)];
+		var cell = row.querySelectorAll("td")[dayIndex % 7];
+		return cell.querySelector(".dhx_month_head");
 	};
 
 	scheduler._year_marked_cells = {};

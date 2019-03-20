@@ -1,6 +1,6 @@
 {
   "name": "scheduler",
-  "version": "5.0.1",
+  "version": "5.1.6",
   "homepage": "http://dhtmlx.com/docs/products/dhtmlxScheduler/",
   "description": "JavaScript event calendar. Allows to manage events and appointments in different views",
   "main": [
@@ -18,14 +18,14 @@
     "year"
   ],
   "license": "GPL",
-  "_release": "5.0.1",
+  "_release": "5.1.6",
   "_resolution": {
     "type": "version",
-    "tag": "v5.0.1",
-    "commit": "f67e4c42ba21bb256b89b56bf894e6beda4b7990"
+    "tag": "v5.1.6",
+    "commit": "f1629dd8647b08978d3f8ba4d56eacc9b741f543"
   },
   "_source": "https://github.com/DHTMLX/scheduler.git",
-  "_target": "v5.0.1",
+  "_target": "v5.1.6",
   "_originalSource": "scheduler",
   "_direct": true
 }
