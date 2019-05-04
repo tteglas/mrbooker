@@ -14,6 +14,7 @@ using MRBooker.Wrappers;
 using Microsoft.AspNetCore.SignalR;
 using MRBooker.Services.Notifier.Hubs;
 using System.Threading.Tasks;
+using static MRBooker.Business.ReservationStatus;
 
 namespace MRBooker.Controllers.Api
 {
@@ -197,7 +198,7 @@ namespace MRBooker.Controllers.Api
                         Start = Convert.ToDateTime(model.StartDate),
                         End = Convert.ToDateTime(model.EndDate),
                         RoomId = model.RoomId,
-                        Status = model.Status,
+                        Status = ReservationStatusEnum.New.ToString(),
                         Title = model.Title,
                         AddedDate = DateTime.Now,
                         ModifiedDate = DateTime.Now,
@@ -244,7 +245,7 @@ namespace MRBooker.Controllers.Api
                 reservation.End = Convert.ToDateTime(model.EndDate);
                 reservation.Title = model.Title;
                 reservation.Description = model.Description;
-                reservation.Status = model.Status;
+                reservation.Status = ReservationStatusEnum.Modified.ToString();
                 reservation.RoomId = model.RoomId;
 
                 _unitOfWork.ReservationRepository.Update(reservation);
