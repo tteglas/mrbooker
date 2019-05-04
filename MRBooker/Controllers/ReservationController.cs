@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MRBooker.Data.Repository;
 using MRBooker.Data.Models.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MRBooker.Wrappers;
 using Microsoft.Extensions.Logging;
-using MRBooker.Data.ReservationViewModels;
 using MRBooker.Data.UoW;
 
 namespace MRBooker.Controllers

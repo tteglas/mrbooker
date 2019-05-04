@@ -25,8 +25,6 @@
     scheduler.config.last_hour = 22;
     scheduler.config.server_utc = false;
     scheduler.config.readonly = false;
-    scheduler.locale.labels.map_tab = "Map";
-    //scheduler.locale.labels.section_location = "Location";
 
     var selectedRoom = [
         { key: $('#RoomId option:selected').val(), label: $('#RoomId option:selected').text() }
@@ -34,10 +32,8 @@
     var lbSections = [
         { name: "Title", height: 30, map_to: "title", type: "textarea", focus: true },
         { name: "Description", height: 60, map_to: "description", type: "textarea" },
-        //{ name: "Location", height: 43, map_to: "event_location", type: "textarea" },
-        { name: "Status", height: 30, map_to: "status", type: "textarea" },
         { name: "room", height: 58, options: selectedRoom, map_to: "room", type: "radio", vertical: true },
-        { name: "time", height: 72, type: "time", map_to: "auto", time_format: ["%H:%i", "%d", "%m", "%Y"] }
+        { name: "Time", height: 72, type: "time", map_to: "auto", time_format: ["%H:%i", "%d", "%m", "%Y"] }
     ];
 
     scheduler.templates.event_bar_text = function (start, end, ev) {
@@ -76,9 +72,7 @@
         scheduler.resetLightbox();
             lbSections = [
                 { name: "Title", height: 30, map_to: "title", type: "textarea", focus: true },
-                { name: "Description", height: 60, map_to: "description", type: "textarea", },
-                { name: "Status", height: 30, map_to: "status", type: "textarea"},
-                //{ name: "Location", height: 43, map_to: "event_location", type: "textarea" },
+                { name: "Description", height: 60, map_to: "description", type: "textarea" },
                 {
                     name: "room",
                     height: 58,
@@ -86,7 +80,7 @@
                     map_to: "roomId",
                     type: "select"
                 },
-                { name: "time", height: 72, type: "time", map_to: "auto", time_format: ["%H:%i", "%d", "%m", "%Y"] }
+                { name: "Time", height: 72, type: "time", map_to: "auto", time_format: ["%H:%i", "%d", "%m", "%Y"] }
             ];
         scheduler.config.lightbox.sections = lbSections;
         return true;
