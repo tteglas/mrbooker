@@ -8,7 +8,6 @@
     "bootstrap": "v4.3.1",
     "popper.js": "v1.15.0",
     "scheduler": "v5.1.6",
-    "bootstrap-colorpicker": "3.1.1",
     "notifyjs": "v0.4.2"
   },
   "resolutions": {
