@@ -7,13 +7,29 @@
 
   <ItemGroup>
     <Compile Remove="Logs\**" />
+    <Compile Remove="wwwroot\lib\bootstrap-colorpicker\**" />
     <Content Remove="Logs\**" />
+    <Content Remove="wwwroot\lib\bootstrap-colorpicker\**" />
     <EmbeddedResource Remove="Logs\**" />
+    <EmbeddedResource Remove="wwwroot\lib\bootstrap-colorpicker\**" />
     <None Remove="Logs\**" />
+    <None Remove="wwwroot\lib\bootstrap-colorpicker\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\css\leftMenu.css" />
+    <Content Remove="wwwroot\css\leftMenu.min.css" />
+    <Content Remove="wwwroot\css\notify-component.css" />
+    <Content Remove="wwwroot\css\notify-component.min.css" />
   </ItemGroup>
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\css\notify-component.min.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="static\css\site.css" />
+    <Content Include="static\js\scheduler.js" />
   </ItemGroup>
 
 
@@ -30,42 +46,6 @@
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>-->
-
-  <ItemGroup>
-    <None Include="wwwroot\js\Scheduler.min.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\dist\css\bootstrap-colorpicker.css.map" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\dist\css\bootstrap-colorpicker.min.css.map" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\dist\js\bootstrap-colorpicker.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\dist\js\bootstrap-colorpicker.min.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\helpers\code\index.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\api.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\example.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\01_basic.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\02_component.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\03_component_options.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\04_events.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\05_transparent.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\06_horizontal.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\07_inline.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\08_palette.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\09_size.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\10_disabled.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\examples\11_modal.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\includes\social.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\layout.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\docs\pages\index.hbs" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\LICENSE" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\README.md" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\serve.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\spec\color\hex-color-spec.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\src\js\colorpicker-color.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\src\js\colorpicker-component.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\src\js\colorpicker-defaults.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\src\js\colorpicker-plugin-wrapper.js" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\src\less\colorpicker.less" />
-    <None Include="wwwroot\lib\bootstrap-colorpicker\src\sass\_colorpicker.scss" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MRBooker.Data\MRBooker.Data.csproj" />

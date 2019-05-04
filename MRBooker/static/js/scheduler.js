@@ -1,4 +1,4 @@
-$(document).ready(function () {
+﻿$(document).ready(function () {
 
     $("#RoomId").change(function () {
         var roomid = $('#RoomId option:selected').val();

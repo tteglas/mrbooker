@@ -6,20 +6,16 @@
     <title>@ViewData["Title"] - MRBooker</title>
 
     <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="~/css/leftMenu.css" />
         <link rel="stylesheet" href="~/css/bootstrap-colorpicker.css" />
-        <link rel="stylesheet" href="~/css/notify-component.css" />
         <link rel="stylesheet" href="~/lib/scheduler/codebase/dhtmlxscheduler.css" type="text/css">
     </environment>
 
     <environment exclude="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/bootstrap.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-        <link rel="stylesheet" href="~/css/leftMenu.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/css/bootstrap-colorpicker.min.css" asp-append-version="true" />
-        <link rel="stylesheet" href="~/css/notify-component.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/lib/scheduler/codebase/dhtmlxscheduler.min.css" asp-append-version="true" />
     </environment>
 </head>
@@ -46,32 +42,29 @@
         </div>
     </div>
     <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/js/jquery.js" asp-append-version="true"></script>
         <script src="~/lib/popper.js/dist/umd/popper.js" asp-append-version="true"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js" asp-append-version="true"></script>
-        <script src="~/lib/notifyjs/dist/notify.js" asp-append-version="true"></script>
-        <script src="~/lib/signalr/signalr.js" asp-append-version="true"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/bootstrap.js" asp-append-version="true"></script>
         <script src="~/js/bootstrap-colorpicker.js" asp-append-version="true"></script>
+        <script src="~/js/notify.js" asp-append-version="true"></script>
+        <script src="~/js/signalr.js" asp-append-version="true"></script>
     </environment>
 
     <environment exclude="Development">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                asp-fallback-test="window.jQuery"
-                crossorigin="anonymous"
-                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.4.1.min.js"
+                asp-fallback-src="~/js/jquery.min.js"
+                crossorigin="anonymous">
         </script>
         <script src="~/lib/popper.js/dist/umd/popper.min.js"></script>
-        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
-        </script>
-        <script src="~/lib/signalr/signalr.min.js"></script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"
+                asp-fallback-src="~/js/bootstrap.min.js"
+                crossorigin="anonymous">
+        </script>
         <script src="~/js/bootstrap-colorpicker.min.js" asp-append-version="true"></script>
+        <script src="~/js/notify.min.js"></script>
+        <script src="~/js/signalr.min.js"></script>
     </environment>
 
     @RenderSection("Scripts", required: false)
