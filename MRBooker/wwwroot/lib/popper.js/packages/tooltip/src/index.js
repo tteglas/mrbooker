@@ -11,6 +11,8 @@ const DEFAULT_OPTIONS = {
     '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
   trigger: 'hover focus',
   offset: 0,
+  arrowSelector: '.tooltip-arrow, .tooltip__arrow',
+  innerSelector: '.tooltip-inner, .tooltip__inner',
 };
 
 export default class Tooltip {
@@ -19,16 +21,17 @@ export default class Tooltip {
    * @class Tooltip
    * @param {HTMLElement} reference - The DOM node used as reference of the tooltip (it can be a jQuery element).
    * @param {Object} options
-   * @param {String|PlacementFunction} options.placement=top
+   * @param {String} options.placement='top'
    *      Placement of the popper accepted values: `top(-start, -end), right(-start, -end), bottom(-start, -end),
    *      left(-start, -end)`
+   * @param {String} options.arrowSelector='.tooltip-arrow, .tooltip__arrow' - className used to locate the DOM arrow element in the tooltip.
+   * @param {String} options.innerSelector='.tooltip-inner, .tooltip__inner' - className used to locate the DOM inner element in the tooltip.
    * @param {HTMLElement|String|false} options.container=false - Append the tooltip to a specific element.
    * @param {Number|Object} options.delay=0
    *      Delay showing and hiding the tooltip (ms) - does not apply to manual trigger type.
    *      If a number is supplied, delay is applied to both hide/show.
    *      Object structure is: `{ show: 500, hide: 100 }`
    * @param {Boolean} options.html=false - Insert HTML into the tooltip. If false, the content will inserted with `textContent`.
-   * @param {String|PlacementFunction} options.placement='top' - One of the allowed placements, or a function returning one of them.
    * @param {String} [options.template='<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>']
    *      Base HTML to used when creating the tooltip.
    *      The tooltip's `title` will be injected into the `.tooltip-inner` or `.tooltip__inner`.
@@ -38,6 +41,7 @@ export default class Tooltip {
    * @param {String} [options.trigger='hover focus']
    *      How tooltip is triggered - click, hover, focus, manual.
    *      You may pass multiple triggers; separate them with a space. `manual` cannot be combined with any other trigger.
+   * @param {Boolean} options.closeOnClickOutside=false - Close a popper on click outside of the popper and reference element. This has effect only when options.trigger is 'click'.
    * @param {String|HTMLElement} options.boundariesElement
    *      The element used as boundaries for the tooltip. For more information refer to Popper.js'
    *      [boundariesElement docs](https://popper.js.org/popper-documentation.html)
@@ -123,12 +127,6 @@ export default class Tooltip {
   updateTitleContent = (title) => this._updateTitleContent(title);
 
   //
-  // Defaults
-  //
-  arrowSelector = '.tooltip-arrow, .tooltip__arrow';
-  innerSelector = '.tooltip-inner, .tooltip__inner';
-
-  //
   // Private methods
   //
 
@@ -159,7 +157,7 @@ export default class Tooltip {
     tooltipNode.setAttribute('aria-hidden', 'false');
 
     // add title to tooltip
-    const titleNode = tooltipGenerator.querySelector(this.innerSelector);
+    const titleNode = tooltipGenerator.querySelector(this.options.innerSelector);
     this._addTitleContent(reference, title, allowHtml, titleNode);
 
     // return the generated tooltip node
@@ -192,7 +190,7 @@ export default class Tooltip {
 
     // if the tooltipNode already exists, just show it
     if (this._tooltipNode) {
-      this._tooltipNode.style.display = '';
+      this._tooltipNode.style.visibility = 'visible';
       this._tooltipNode.setAttribute('aria-hidden', 'false');
       this.popperInstance.update();
       return this;
@@ -230,9 +228,11 @@ export default class Tooltip {
     this._popperOptions.modifiers = {
       ...this._popperOptions.modifiers,
       arrow: {
-        element: this.arrowSelector,
+        ...(this._popperOptions.modifiers && this._popperOptions.modifiers.arrow),
+        element: options.arrowSelector,
       },
       offset: {
+        ...(this._popperOptions.modifiers && this._popperOptions.modifiers.offset),
         offset: options.offset,
       },
     };
@@ -263,7 +263,7 @@ export default class Tooltip {
     this._isOpen = false;
 
     // hide tooltipNode
-    this._tooltipNode.style.display = 'none';
+    this._tooltipNode.style.visibility = 'hidden';
     this._tooltipNode.setAttribute('aria-hidden', 'true');
 
     return this;
@@ -357,6 +357,19 @@ export default class Tooltip {
       };
       this._events.push({ event, func });
       reference.addEventListener(event, func);
+      if (event === 'click' && options.closeOnClickOutside) {
+        document.addEventListener('mousedown', e => {
+          if (!this._isOpening) {
+            return;
+          }
+          const popper = this.popperInstance.popper;
+          if (reference.contains(e.target) ||
+              popper.contains(e.target)) {
+            return;
+          }
+          func(e);
+        }, true);
+      }
     });
   }
 
@@ -425,7 +438,7 @@ export default class Tooltip {
 
     return false;
   };
-  
+
   _updateTitleContent(title) {
     if(typeof this._tooltipNode === 'undefined') {
       if(typeof this.options.title !== 'undefined') {
@@ -433,7 +446,7 @@ export default class Tooltip {
       }
       return;
     }
-    const titleNode = this._tooltipNode.parentNode.querySelector(this.innerSelector);    
+    const titleNode = this._tooltipNode.querySelector(this.options.innerSelector);
     this._clearTitleContent(titleNode, this.options.html, this.reference.getAttribute('title') || this.options.title)
     this._addTitleContent(this.reference, title, this.options.html, titleNode);
     this.options.title = title;
@@ -449,15 +462,6 @@ export default class Tooltip {
   }
 
 }
-
-/**
- * Placement function, its context is the Tooltip instance.
- * @memberof Tooltip
- * @callback PlacementFunction
- * @param {HTMLElement} tooltip - tooltip DOM node.
- * @param {HTMLElement} reference - reference DOM node.
- * @return {String} placement - One of the allowed placement options.
- */
 
 /**
  * Title function, its context is the Tooltip instance.

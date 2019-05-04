@@ -1,15 +1,15 @@
 {
   "name": "bootstrap-colorpicker",
   "homepage": "https://github.com/itsjavi/bootstrap-colorpicker",
-  "version": "3.0.3",
-  "_release": "3.0.3",
+  "version": "3.1.1",
+  "_release": "3.1.1",
   "_resolution": {
     "type": "version",
-    "tag": "3.0.3",
-    "commit": "efa783bada15e316d173f79f90116ee8bd4b2868"
+    "tag": "3.1.1",
+    "commit": "0a25ac6b964c6bb2047b390e7f540aa7665f095b"
   },
   "_source": "https://github.com/itsjavi/bootstrap-colorpicker.git",
-  "_target": "3.0.3",
+  "_target": "3.1.1",
   "_originalSource": "bootstrap-colorpicker",
   "_direct": true
 }
