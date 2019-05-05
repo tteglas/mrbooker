@@ -107,34 +107,7 @@ $(document).ready(function () {
                         });
                     },
                     error: function (response) {
-                        if (response.status == 500) {
-                            dhtmlx.message({
-                                title: "Server failure !",
-                                type: "alert-error",
-                                text: "Server has failed processing the request."
-                            });
-                        }
-                        else if (response.status == 401) {
-                            dhtmlx.message({
-                                title: "Authorization failure !",
-                                type: "alert-error",
-                                text: "You are not authorized to perform this action."
-                            });
-                        }
-                        else if (response.status == 403) {
-                            dhtmlx.message({
-                                title: "Invalid reservation !",
-                                type: "alert-error",
-                                text: "Your reservation is invalid. Please check again."
-                            });
-                        }
-                        else {
-                            dhtmlx.message({
-                                title: "Reservation",
-                                type: "alert-error",
-                                text: "Something went wrong. Please try again."
-                            });
-                        }
+                        displayErrorMsgAndRefreshScheduler(response.status);
                         return false;
                     }
                 });
@@ -152,7 +125,6 @@ $(document).ready(function () {
                     start_date: ev.start_date,
                     end_date: ev.end_date,
                     description: ev.description,
-                    status: ev.status,
                     title: ev.title,
                     roomId: ev.roomId
                 }
@@ -177,42 +149,8 @@ $(document).ready(function () {
                     return true;
                 },
                 error: function (response) {
-                    if (response.status == 500) {
-                        dhtmlx.message({
-                            title: "Server failure !",
-                            type: "alert-error",
-                            text: "Server has failed processing the request."
-                        });
-                    }
-                    else if (response.status == 401) {
-                        dhtmlx.message({
-                            title: "Authorization failure !",
-                            type: "alert-error",
-                            text: "You are not authorized to perform this action."
-                        });
-                    }
-                    else if (response.status == 403) {
-                        dhtmlx.message({
-                            title: "Invalid reservation !",
-                            type: "alert-error",
-                            text: "Your reservation is invalid. Please check again."
-                        });
-                    }
-                    else if (response.status == 404) {
-                        dhtmlx.message({
-                            title: "Not found !",
-                            type: "alert-error",
-                            text: "The reservation you are trying to update was not found."
-                        });
-                    }
-                    else {
-                        dhtmlx.message({
-                            title: "Reservation",
-                            type: "alert-error",
-                            text: "Something went wrong. Please try again."
-                        });
-                    }
-                    return false;
+                    displayErrorMsgAndRefreshScheduler(response.status);
+                        return false;
                 }
             });
         });
@@ -228,39 +166,63 @@ $(document).ready(function () {
                         console.log('success !' + response);
                         return true;
                     },
-                    error: function(response) {
-                        if (response.status == 500) {
-                            dhtmlx.message({
-                                title: "Server failure !",
-                                type: "alert-error",
-                                text: "Server has failed processing the request."
-                            });
-                        }
-                        else if (response.status == 401) {
-                            dhtmlx.message({
-                                title: "Authorization failure !",
-                                type: "alert-error",
-                                text: "You are not authorized to perform this action."
-                            });
-                        }
-                        else if (response.status == 404) {
-                            dhtmlx.message({
-                                title: "Not found !",
-                                type: "alert-error",
-                                text: "The reservation you are trying to delete was not found."
-                            });
-                        }
-                        else {
-                            dhtmlx.message({
-                                title: "Reservation",
-                                type: "alert-error",
-                                text: "Something went wrong. Please try again."
-                            });
-                        }
+                    error: function (response) {
+                        displayErrorMsgAndRefreshScheduler(response.status);
                         return false;
                     }
                 });
             }
         });
+    
+    function displayErrorMsgAndRefreshScheduler(status) {
+        switch (status) {
+            case 500:
+                dhtmlx.message({
+                    title: "Server failure !",
+                    type: "alert-error",
+                    text: "Server has failed processing the request."
+                });
+                break;
+            case 401:
+                dhtmlx.message({
+                    title: "Authorization failure !",
+                    type: "alert-error",
+                    text: "You are not authorized to perform this action.",
+                    callback: function () {
+                        scheduler.load("api/reservationApi/GetAll", "json");
+                    }
+                });
+                break;
+            case 403:
+                dhtmlx.message({
+                    title: "Forbidden !",
+                    type: "alert-error",
+                    text: "You are forbidden to perform this action.",
+                    callback: function () {
+                        scheduler.load("api/reservationApi/GetAll", "json");
+                    }
+                });
+                break;
+            case 404:
+                dhtmlx.message({
+                    title: "Not found !",
+                    type: "alert-error",
+                    text: "The reservation you are trying to delete was not found.",
+                    callback: function () {
+                        scheduler.load("api/reservationApi/GetAll", "json");
+                    }
+                });
+                break;
+            default:
+                dhtmlx.message({
+                    title: "Reservation",
+                    type: "alert-error",
+                    text: "Something went wrong. Please try again.",
+                    callback: function () {
+                        scheduler.load("api/reservationApi/GetAll", "json");
+                    }
+                });
+        }
+    };
     
 });
