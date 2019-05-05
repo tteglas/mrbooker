@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using MRBooker.Services.Notifier.Hubs;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace MRBooker
 {
@@ -33,6 +34,12 @@ namespace MRBooker
         {
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
+
+            // in a "Shared Hosting" envinronment, whenever another server takes over the load,
+            // the context is gone (the user is also logged out)
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(Directory.GetCurrentDirectory() + "\\keys"))
+                .ProtectKeysWithDpapi(true);
 
             services.ConfigureApplicationCookie(options =>
             {

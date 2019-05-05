@@ -11,3 +11,4 @@ MRBooker/Logs
 /MRBooker.Tests/obj
 /MRBooker.Tests/bin/
 *.pubxml
+/MRBooker/keys
