@@ -238,6 +238,12 @@ namespace MRBooker.Controllers.Api
                 var reservation = _unitOfWork.ReservationRepository.GetAll().Include(x => x.Room).FirstOrDefault(x=> x.Id == model.Id);
                 if (reservation == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
+                
+                // cannot update other reservations, except the ones with ownership
+                if (!validator.IsOwnedByUser(_userManager.GetUserId(User), reservation.UserId))
+                {
+                    return new StatusCodeResult(StatusCodes.Status403Forbidden);
+                }
 
                 reservation.ModifiedDate = DateTime.Now;
                 reservation.IPAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -277,6 +283,13 @@ namespace MRBooker.Controllers.Api
                 var reservation = _unitOfWork.ReservationRepository.Get(id);
                 if (reservation == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
+
+                var validator = new SchedulerEventValidation(_unitOfWork);
+                // cannot delete other reservations, except the ones with ownership
+                if (!validator.IsOwnedByUser(_userManager.GetUserId(User), reservation.UserId))
+                {
+                    return new StatusCodeResult(StatusCodes.Status403Forbidden);
+                }
 
                 _unitOfWork.ReservationRepository.Delete(reservation);
                 _unitOfWork.Save();

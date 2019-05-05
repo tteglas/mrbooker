@@ -50,6 +50,16 @@ namespace MRBooker.Extensions.Validation
             return isValidModel;
         }
 
+        public bool IsOwnedByUser(string loggedInUserId, string reservationUserId)
+        {
+            var isOwnedByUser = false;
+            if (string.IsNullOrWhiteSpace(loggedInUserId) || string.IsNullOrWhiteSpace(reservationUserId))
+                return isOwnedByUser;
+
+            isOwnedByUser = loggedInUserId.ToLowerInvariant() == reservationUserId.ToLowerInvariant();
+            return isOwnedByUser;
+        }
+
         private bool IsOverlapping(Reservation reservation, DateTime modelStartDate, DateTime modelEndDate)
         {
             bool isOverlappingWithOtherReservation = false;
